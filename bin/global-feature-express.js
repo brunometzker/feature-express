@@ -14,8 +14,12 @@ app.use(express.static(path.join(__dirname, '..', 'assets')));
 app.set('views', path.join(__dirname, '..', 'views'));
 app.engine('html', require('ejs').renderFile);
 
-app.get(featurebookEndPoint , (req, res) => reader.generateHashOfFilesByPath(envPath).then(contentFeature =>
-  contentFeature == undefined  || Object.keys(contentFeature).length==0 ? res.render('error-page.html', {err :"Feature files or Directory dont exist!"}) :  res.render('index.html', {contentFeature , language})));
+app.get(featurebookEndPoint , (req, res) => {
+  reader.buildModel(envPath);
+
+  if(MODEL == undefined || Object.keys(MODEL).length == 0) res.render('error-page.html', {err: 'Unable to find feature files directory!'});
+  else res.render('index.html', {MODEL, language});
+});
 
 app.listen(port);
 
