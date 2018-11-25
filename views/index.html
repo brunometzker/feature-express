@@ -12,9 +12,6 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
      <% var bddLanguage = language;%>
-    <script type="text/javascript">
-      var gherkinLanguage = <%- JSON.stringify(bddLanguage)  %>;
-    </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="js/html-keywords.js"></script>
     <script src="js/language.js"></script>
@@ -43,7 +40,7 @@
             </header>
 
             <div class="list-group" id="myList" role="tablist">
-            <% Object.keys(contentFeature).forEach(function(prop) { %>
+            <% Object.keys(reader.MODEL).forEach(function(prop) { console.log(prop); %>
               <a class="list-group-item list-group-item-action" data-toggle="list" href="#<%=prop%>" role="tab"><%=prop%></a>
             <% }); %>
             </div>
@@ -52,11 +49,11 @@
 
         <main class="col-lg-9 ml-sm-auto cs-content">
           <div class="tab-content">
-         <% Object.keys(contentFeature).forEach(function(prop) { %>
+         <% Object.keys(reader.MODEL).forEach(function(prop) { %>
           <div class="tab-pane jumbotron font-weight-light cs-pane" id=<%=prop%> role="tabpanel">
              <ul>
-               <% for(let i = 0; i < contentFeature[prop].length; i++) { %>
-               <li><%=contentFeature[prop][i]%></li>
+               <% for(let i = 0; i < reader.MODEL[prop].length; i++) { %>
+               <li><%=reader.MODEL[prop][i]%></li>
                <% } %>
              </ul>
             </div>

@@ -17,8 +17,8 @@ app.engine('html', require('ejs').renderFile);
 app.get(featurebookEndPoint , (req, res) => {
   reader.buildModel(envPath);
 
-  if(MODEL == undefined || Object.keys(MODEL).length == 0) res.render('error-page.html', {err: 'Unable to find feature files directory!'});
-  else res.render('index.html', {MODEL, language});
+  if(reader.MODEL == undefined || Object.keys(reader.MODEL).length == 0) res.render('error-page.html', {err: 'Unable to find feature files directory!'});
+  else res.render('index.html', { reader, language });
 });
 
 app.listen(port);
