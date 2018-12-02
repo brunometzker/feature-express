@@ -38,27 +38,37 @@
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
-
-            <div class="list-group" id="myList" role="tablist">
-            <% Object.keys(reader.MODEL).forEach(function(prop) { console.log(prop); %>
-              <a class="list-group-item list-group-item-action" data-toggle="list" href="#<%=prop%>" role="tab"><%=prop%></a>
-            <% }); %>
-            </div>
           </div>
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
           <div class="tab-content">
-         <% Object.keys(reader.MODEL).forEach(function(prop) { %>
-          <div class="tab-pane jumbotron font-weight-light cs-pane" id=<%=prop%> role="tabpanel">
-             <ul>
-               <% for(let i = 0; i < reader.MODEL[prop].length; i++) { %>
-               <li><%=reader.MODEL[prop][i]%></li>
-               <% } %>
-             </ul>
-            </div>
-         <% }); %>
-          </div>
+            <ul>
+              <% 
+                let parseModelRecursively = (obj) => {
+                  if(obj.isDirectory) {
+              %>
+                    <li>
+                      <%=obj.name%>
+                      <ul>
+              <%
+                    obj.content.forEach(function (item) {
+                      parseModelRecursively(item);
+                    }, obj);
+              %>
+                      </ul>
+                    </li>
+              <%
+                  } else {
+              %>
+                      <li><%=obj.name%></li>
+              <%
+                  }  
+                }
+
+                parseModelRecursively(rootFolder);
+              %>
+            </ul>
         </main>
 
 

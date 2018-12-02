@@ -15,10 +15,13 @@ app.set('views', path.join(__dirname, '..', 'views'));
 app.engine('html', require('ejs').renderFile);
 
 app.get(featurebookEndPoint , (req, res) => {
-  reader.buildModel(envPath);
-
-  if(reader.MODEL == undefined || Object.keys(reader.MODEL).length == 0) res.render('error-page.html', {err: 'Unable to find feature files directory!'});
-  else res.render('index.html', { reader, language });
+  try {
+    let rootFolder = reader.getFiles(envPath);
+    res.render('index.html', { rootFolder, language });
+  } catch(error) {
+    console.error(error);
+    res.render('error-page.html', {err: 'Unable to find feature files directory!'});
+  }
 });
 
 app.listen(port);
