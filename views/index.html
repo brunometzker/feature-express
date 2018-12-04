@@ -23,57 +23,55 @@
     <link rel="manifest" href="images/site.webmanifest">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
-
   </head>
   <body>
 
     <section class="container-fluid">
-
       <!-- List group -->
       <div class="row">
-
         <div class="col-lg-3 d-lg-block sidebar cs-nav">
-
           <div class="sidebar-sticky">
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
+            <ul class="list-group">
+              <% 
+                let parseModelRecursively = (obj, shouldHide) => {
+                  if(obj.isDirectory) {
+              %>
+                    <li class="<%= shouldHide ? 'hide' : '' %> list-group-item">
+                        <a class="nav-link" href=""><%=obj.name%></a>
+                        <ul>
+              <%
+                    obj.content.forEach(function (item) {
+                      parseModelRecursively(item, true);
+                    }, obj);
+              %>
+                        </ul>
+                    </li>
+              <%
+                  } else {
+              %>
+                    <li class="<%= shouldHide ? 'hide' : '' %> list-group-item">
+                      <a class="nav-link" href="#">
+                          <%=obj.name%>
+                      </a>
+                    </li>
+              <%
+                  }
+                }
+
+                parseModelRecursively(rootFolder, false);
+              %>
+            </ul>
           </div>
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
           <div class="tab-content">
-            <ul>
-              <% 
-                let parseModelRecursively = (obj) => {
-                  if(obj.isDirectory) {
-              %>
-                    <li>
-                      <%=obj.name%>
-                      <ul>
-              <%
-                    obj.content.forEach(function (item) {
-                      parseModelRecursively(item);
-                    }, obj);
-              %>
-                      </ul>
-                    </li>
-              <%
-                  } else {
-              %>
-                      <li><%=obj.name%></li>
-              <%
-                  }  
-                }
-
-                parseModelRecursively(rootFolder);
-              %>
-            </ul>
+          </div>
         </main>
-
-
       </div>
-
     </section>
 
     <footer class="cs-footer">
