@@ -6,10 +6,6 @@ body {
   margin-left: 40px;
 }
 
-.hide {
-  display: none;
-}
-
 /* List */
 ul {
   list-style: none;

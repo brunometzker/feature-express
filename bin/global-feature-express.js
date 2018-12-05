@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
-let express = require('express');
-let reader = require('../lib/reader.js');
-let app = express();
-let featurebookEndPoint = '/';
-let envPath = process.argv[2];
-let language = process.argv[3] == null ? 'en' : process.argv[3];
-let port = process.argv[4] == null ? 3000 :  process.argv[4];
+const express = require('express');
+const reader = require('../lib/reader.js');
+const localeHandler = require("../lib/locale-handler");
+const path = require('path');
 
-let path = require('path');
+const app = express();
+const featurebookEndPoint = '/';
+const envPath = process.argv[2];
+const language = localeHandler.getValidLanguage(process.argv[3] || process.env.LANG);
+const port = process.argv[4] == null ? 3000 :  process.argv[4];
+const jiraUrlBase = process.argv[5] || null;
+const boardAcronym = process.argv[6] || null;
 
 app.use(express.static(path.join(__dirname, '..', 'assets')));
 app.set('views', path.join(__dirname, '..', 'views'));
@@ -17,7 +20,7 @@ app.engine('html', require('ejs').renderFile);
 app.get(featurebookEndPoint , (req, res) => {
   try {
     let rootFolder = reader.getFiles(envPath);
-    res.render('index.html', { rootFolder, language });
+    res.render('index.html', { rootFolder, language, jiraUrlBase, boardAcronym });
   } catch(error) {
     console.error(error);
     res.render('error-page.html', {err: 'Unable to find feature files directory!'});
