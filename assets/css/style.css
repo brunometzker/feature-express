@@ -6,44 +6,47 @@ body {
   margin-left: 40px;
 }
 
-/* List */
 ul {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.list-group {
-  border-bottom: 1px solid #EFEFEF !important;
-}
-
-li {
-  display: inline-block;
   width: 100%;
-  line-height: 30px;
 }
 
-li span {
-  color: #D0D0D0;
-  padding-right: 10px;
+ul li {
+  width: inherit;
+  padding-top: 20px;
 }
 
-.list-group-item {
-  border-radius: 0 !important;
+ul li i {
+  font-size: 1.75rem;
+}
+
+ul li span {
+  font-size: 1.25rem;
+}
+
+.folder-link {
+  display: inline-block;
+  width: inherit;
+}
+
+.folder-icon, .folder-arrow, .file-icon {
+  display: inline-block;
+  width: 15%;
   text-align: center;
-  border-top: 1px solid #EFEFEF !important;
-  padding: 20px 0;
-  border-right: 0;
-  border-left: 0;
-  border-bottom: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #5A5A5A;
+  pointer-events: none;
+  vertical-align: middle;
 }
 
-.list-group-item.active {
-  color: #fff;
-  background-color: #06BE9F;
+.folder-name, .file-name {
+  width: 70%;
+  display: inline-block;
+  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
 }
 
 /* Customizations */
@@ -57,12 +60,12 @@ li span {
 }
 
 .cs-header__brand {
-  max-width: 290px;
+  max-width: 70%;
   margin: 0 auto;
 }
 
 .cs-header__brand img{
-  width: 90%;
+  width: 100%;
 }
 
 .cs-nav {
@@ -163,7 +166,7 @@ li span {
 .sidebar-sticky {
   position: -webkit-sticky;
   position: sticky;
-  height: calc(100vh - 48px);
+  height: calc(100vh - 88px);
   padding-top: .5rem;
   overflow-x: hidden;
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */

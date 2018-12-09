@@ -10,11 +10,56 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
     <link rel="stylesheet" href="css/style.css">
 
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="js/html-keywords.js"></script>
     <script src="js/language.js"></script>
     <script src="js/locales.js"></script>
+
+    <script>
+        var changeFolderIcon = function(folderIcon, isOpen) {
+          if(isOpen) {
+            $(folderIcon).removeClass('fa-folder-open');
+            $(folderIcon).addClass('fa-folder');
+          } else {
+            $(folderIcon).removeClass('fa-folder');
+            $(folderIcon).addClass('fa-folder-open');
+          }
+        }
+
+        var toggleFolderArrow = function(folderArrow, isOpen) {
+          if(isOpen) {
+            $(folderArrow).addClass('invisible');
+          } else {
+            $(folderArrow).removeClass('invisible');
+          }
+        }
+
+        $(document).ready(function() {
+          document.querySelectorAll('.root li a').forEach((element) => {
+            element.addEventListener('click', function(event) {
+              var element = event.srcElement;
+
+              if(element.classList.contains('folder-link')) {
+                var folderContent = element.nextElementSibling;
+      
+                if(folderContent.classList.contains('show')) {
+                  $(folderContent).collapse('hide');
+                  changeFolderIcon(element.querySelector('.folder-icon'), true);
+                  toggleFolderArrow(element.querySelector('.folder-arrow'), true);
+                } else {
+                  $(folderContent).collapse('show');
+                  changeFolderIcon(element.querySelector('i'), false);
+                  toggleFolderArrow(element.querySelector('.folder-arrow'), false);
+                }
+              }
+            });
+          });
+        });
+      </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -34,29 +79,32 @@
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
-            <ul class="list-group">
+            <ul class="root">
               <% 
                 let parseModelRecursively = (obj) => {
                   if(obj.isDirectory) {
               %>
-                    <li class="list-group-item list-group-item-action">
-                        <a data-toggle="collapse" href='#<%= obj.name %>' aria-expanded="false" aria-controls='<%= obj.name %>'>
-                          <%=obj.name%>
-                        </a>
-                        <ul class="collapse" id='<%= obj.name %>'>
+                    <li class="folder">
+                      <a class="folder-link">
+                        <i class="folder-icon far fa-folder"></i><!--
+                     --><span class="folder-name"><%=obj.name%></span><!--
+                     --><i class="folder-arrow invisible fas fa-angle-down"></i>
+                      </a>
+                      <ul class="collapse folder-content" id='<%= obj.name %>'>
               <%
                     obj.content.forEach(function (item) {
                       parseModelRecursively(item);
                     }, obj);
               %>
-                        </ul>
+                      </ul>
                     </li>
               <%
                   } else {
               %>
-                    <li class="list-group-item list-group-item-action">
-                      <a>
-                          <%=obj.name%>
+                    <li class="file">
+                      <a class="file-link">
+                        <i class="file-icon devicon-cucumber-plain colored"></i><!--
+                        --><span class="file-name"><%=obj.name%></span>
                       </a>
                     </li>
               <%
@@ -81,7 +129,7 @@
       <br>
       <span>Design by <a href="http://kalyneramon.com.br/" target="_blank">Kalyne Ramon</a></span>
     </footer>
-    
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
