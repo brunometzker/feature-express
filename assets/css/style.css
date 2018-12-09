@@ -49,6 +49,15 @@ ul li span {
   white-space: nowrap;
 }
 
+.active-feature {
+  background-color: #05AD91;
+  padding: 20px 0;
+}
+
+.active-feature span {
+  color: #ffffff;
+}
+
 /* Customizations */
 .cs-header {
   background: #fff;

@@ -14,59 +14,114 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
     <link rel="stylesheet" href="css/style.css">
 
+    <% var featureFiles = []; %>
+
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="js/html-keywords.js"></script>
     <script src="js/language.js"></script>
     <script src="js/locales.js"></script>
 
-    <% var featureFiles = []; %>
+    <script type="text/javascript">
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+          animation: true,
+          delay: { show: 500, hide: 100 }
+        });
+      });
 
-    <script>
-        var changeFolderIcon = function(folderIcon, isOpen) {
-          if(isOpen) {
-            $(folderIcon).removeClass('fa-folder-open');
-            $(folderIcon).addClass('fa-folder');
-          } else {
-            $(folderIcon).removeClass('fa-folder');
-            $(folderIcon).addClass('fa-folder-open');
-          }
+      var changeFolderIcon = function(folderIcon, isOpen) {
+        if(isOpen) {
+          $(folderIcon).removeClass('fa-folder-open');
+          $(folderIcon).addClass('fa-folder');
+        } else {
+          $(folderIcon).removeClass('fa-folder');
+          $(folderIcon).addClass('fa-folder-open');
         }
+      }
 
-        var toggleFolderArrow = function(folderArrow, isOpen) {
-          if(isOpen) {
-            $(folderArrow).addClass('invisible');
-          } else {
-            $(folderArrow).removeClass('invisible');
-          }
+      var toggleFolderArrow = function(folderArrow, isOpen) {
+        if(isOpen) {
+          $(folderArrow).addClass('invisible');
+        } else {
+          $(folderArrow).removeClass('invisible');
         }
+      }
 
-        $(document).ready(function() {
-          document.querySelectorAll('.root li a').forEach((element) => {
-            element.addEventListener('click', function(event) {
-              var element = event.srcElement;
+      $(document).ready(function() {
+        document.querySelectorAll('.root li a').forEach((element) => {
+          element.addEventListener('click', function(event) {
+            var element = event.srcElement;
 
-              if(element.classList.contains('folder-link')) {
-                var folderContent = element.nextElementSibling;
-      
-                if(folderContent.classList.contains('show')) {
-                  $(folderContent).collapse('hide');
-                  changeFolderIcon(element.querySelector('.folder-icon'), true);
-                  toggleFolderArrow(element.querySelector('.folder-arrow'), true);
-                } else {
-                  $(folderContent).collapse('show');
-                  changeFolderIcon(element.querySelector('.folder-icon'), false);
-                  toggleFolderArrow(element.querySelector('.folder-arrow'), false);
-                }
+            if(element.classList.contains('folder-link')) {
+              var folderContent = element.nextElementSibling;
+    
+              if(folderContent.classList.contains('show')) {
+                $(folderContent).collapse('hide');
+                changeFolderIcon(element.querySelector('.folder-icon'), true);
+                toggleFolderArrow(element.querySelector('.folder-arrow'), true);
               } else {
-                var featureFileName = element.querySelector('.file-name').textContent;
-                var featureContent = document.querySelector('.feature #' + featureFileName);
-
-                $(featureContent).removeClass('d-none');
+                $(folderContent).collapse('show');
+                changeFolderIcon(element.querySelector('.folder-icon'), false);
+                toggleFolderArrow(element.querySelector('.folder-arrow'), false);
               }
-            });
+            } else {
+              var featureFileName = element.querySelector('.file-name').textContent;
+              var featureContent = document.querySelector('.feature #' + featureFileName);
+
+              var features = document.querySelectorAll('.feature .feature-content');
+              features.forEach((feature) => {
+                if(!feature.classList.contains('d-none')) {
+                  $(feature).addClass('d-none');
+                }
+              });
+              var activeLinks = document.querySelectorAll('.root a');
+              activeLinks.forEach((link) => {
+                if(link.classList.contains('active-feature')) $(link).removeClass('active-feature');
+              });
+
+              $(element).addClass('active-feature');
+              $(featureContent).removeClass('d-none');
+            }
           });
         });
-      </script>
+      });
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var language = "<%= language %>";
+        document.querySelectorAll('.feature-content ul li').forEach((item) => {
+          $(item).html($(item).html().replace(/\"/g, "<strong>\"</strong>"));
+          $(item).html($(item).html().replace(/\|/g, "<strong>|</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].feature, "<strong>" + LANGUAGE.keywords[language].feature + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].background, "<strong>" + LANGUAGE.keywords[language].background + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].examples, "<strong>" + LANGUAGE.keywords[language].examples + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].scenario_outline, "<strong>" + LANGUAGE.keywords[language].scenario_outline + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].scenario, "<strong>" + LANGUAGE.keywords[language].scenario + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].given, "<strong>" + LANGUAGE.keywords[language].given + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].when, "<strong>" + LANGUAGE.keywords[language].when + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].but, "<strong>" + LANGUAGE.keywords[language].but + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].then, "<strong>" + LANGUAGE.keywords[language].then + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGE.keywords[language].and, "<strong>" + LANGUAGE.keywords[language].and + "</strong>"));
+        });
+  
+        // Add CSS Classes
+        $('.feature-content ul li:contains(' + LANGUAGE.keywords[language].feature + ')').each((item) => {
+          $(item).addClass('cs-feature-title');
+        });
+        
+        $('.feature-content ul li:contains(@)').each((item) => {
+          $(item).addClass('cs-feature-tag');
+        });
+        
+        $('.feature-content ul li:contains(|)').each((item) => {
+          $(item).css('white-space', 'pre');
+        });
+
+        $('.feature-content ul li:contains(' + LANGUAGE.keywords[language].given + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].when + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].then + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].but + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].and + ')').each((item) => {
+          $(item).addClass('cs-feature-steps');
+        });
+      });     
+    </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -77,7 +132,6 @@
     <meta name="theme-color" content="#ffffff">
   </head>
   <body>
-
     <section class="container-fluid">
       <!-- List group -->
       <div class="row">
@@ -92,7 +146,7 @@
                   if(obj.isDirectory) {
               %>
                     <li class="folder">
-                      <a class="folder-link">
+                      <a class="folder-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
                         <i class="folder-icon far fa-folder"></i><!--
                      --><span class="folder-name"><%=obj.name%></span><!--
                      --><i class="folder-arrow invisible fas fa-angle-down"></i>
@@ -110,7 +164,7 @@
                     featureFiles.push(obj);
               %>
                     <li class="file">
-                      <a class="file-link">
+                      <a class="file-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
                         <i class="file-icon devicon-cucumber-plain colored"></i><!--
                         --><span class="file-name"><%=obj.name%></span>
                       </a>
@@ -126,11 +180,11 @@
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
-          <div class="feature tab-content">
+          <div class="feature">
           <%
             featureFiles.forEach((featureFile) => {
           %>
-            <div id="<%=featureFile.name%>" class="d-none tab-pane jumbotron font-weight-light cs-pane">
+            <div id="<%=featureFile.name%>" class="feature-content d-none jumbotron font-weight-light cs-pane">
                 <ul>
                   <% for(let i = 0; i < featureFile.content.length; i++) { %>
                   <li><%=featureFile.content[i]%></li>
@@ -153,7 +207,6 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   </body>
