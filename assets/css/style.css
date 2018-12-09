@@ -26,7 +26,7 @@ ul li span {
   font-size: 1.25rem;
 }
 
-.folder-link {
+.folder-link, .file-link {
   display: inline-block;
   width: inherit;
 }

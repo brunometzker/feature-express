@@ -19,6 +19,8 @@
     <script src="js/language.js"></script>
     <script src="js/locales.js"></script>
 
+    <% var featureFiles = []; %>
+
     <script>
         var changeFolderIcon = function(folderIcon, isOpen) {
           if(isOpen) {
@@ -52,9 +54,14 @@
                   toggleFolderArrow(element.querySelector('.folder-arrow'), true);
                 } else {
                   $(folderContent).collapse('show');
-                  changeFolderIcon(element.querySelector('i'), false);
+                  changeFolderIcon(element.querySelector('.folder-icon'), false);
                   toggleFolderArrow(element.querySelector('.folder-arrow'), false);
                 }
+              } else {
+                var featureFileName = element.querySelector('.file-name').textContent;
+                var featureContent = document.querySelector('.feature #' + featureFileName);
+
+                $(featureContent).removeClass('d-none');
               }
             });
           });
@@ -100,6 +107,7 @@
                     </li>
               <%
                   } else {
+                    featureFiles.push(obj);
               %>
                     <li class="file">
                       <a class="file-link">
@@ -118,7 +126,20 @@
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
-          <div class="tab-content">
+          <div class="feature tab-content">
+          <%
+            featureFiles.forEach((featureFile) => {
+          %>
+            <div id="<%=featureFile.name%>" class="d-none tab-pane jumbotron font-weight-light cs-pane">
+                <ul>
+                  <% for(let i = 0; i < featureFile.content.length; i++) { %>
+                  <li><%=featureFile.content[i]%></li>
+                  <% } %>
+                </ul>
+            </div>
+          <%
+            });
+          %>
           </div>
         </main>
       </div>
