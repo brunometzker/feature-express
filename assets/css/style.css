@@ -29,6 +29,7 @@ ul li span {
 .folder-link, .file-link {
   display: inline-block;
   width: inherit;
+  cursor: pointer;
 }
 
 .folder-icon, .folder-arrow, .file-icon {
