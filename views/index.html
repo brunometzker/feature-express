@@ -17,7 +17,6 @@
     <% var featureFiles = []; %>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="js/language.js"></script>
     <script src="js/locales.js"></script>
 
     <script type="text/javascript">
@@ -92,20 +91,20 @@
         document.querySelectorAll('.feature-content ul li').forEach((item) => {
           $(item).html($(item).html().replace(/\"/g, "<strong>\"</strong>"));
           $(item).html($(item).html().replace(/\|/g, "<strong>|</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].feature, "<strong>" + LANGUAGE.keywords[language].feature + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].background, "<strong>" + LANGUAGE.keywords[language].background + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].examples, "<strong>" + LANGUAGE.keywords[language].examples + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].scenario_outline, "<strong>" + LANGUAGE.keywords[language].scenario_outline + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].scenario, "<strong>" + LANGUAGE.keywords[language].scenario + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].given, "<strong>" + LANGUAGE.keywords[language].given + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].when, "<strong>" + LANGUAGE.keywords[language].when + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].but, "<strong>" + LANGUAGE.keywords[language].but + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].then, "<strong>" + LANGUAGE.keywords[language].then + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGE.keywords[language].and, "<strong>" + LANGUAGE.keywords[language].and + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].feature, "<strong>" + LANGUAGES.keywords[language].feature + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].background, "<strong>" + LANGUAGES.keywords[language].background + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].examples, "<strong>" + LANGUAGES.keywords[language].examples + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario_outline, "<strong>" + LANGUAGES.keywords[language].scenario_outline + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario, "<strong>" + LANGUAGES.keywords[language].scenario + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].given, "<strong>" + LANGUAGES.keywords[language].given + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].when, "<strong>" + LANGUAGES.keywords[language].when + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].but, "<strong>" + LANGUAGES.keywords[language].but + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].then, "<strong>" + LANGUAGES.keywords[language].then + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].and, "<strong>" + LANGUAGES.keywords[language].and + "</strong>"));
         });
   
         // Add CSS Classes
-        $('.feature-content ul li:contains(' + LANGUAGE.keywords[language].feature + ')').each((item) => {
+        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].feature + ')').each((item) => {
           $(item).addClass('cs-feature-title');
         });
         
@@ -117,7 +116,7 @@
           $(item).css('white-space', 'pre');
         });
 
-        $('.feature-content ul li:contains(' + LANGUAGE.keywords[language].given + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].when + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].then + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].but + '), .tab-pane ul li:contains(' + LANGUAGE.keywords[language].and + ')').each((item) => {
+        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].given + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].when + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].then + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].but + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].and + ')').each((item) => {
           $(item).addClass('cs-feature-steps');
         });
       });     
