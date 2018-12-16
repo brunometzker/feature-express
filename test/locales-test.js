@@ -1,7 +1,7 @@
 const chai = require('chai');
 const expect = require('chai').expect;
 
-const locales = require('../lib/locales');
+const locales = require('../assets/js/locales');
 
 describe('Locales test', () => {
   it('Should define LANGUAGES', () => {

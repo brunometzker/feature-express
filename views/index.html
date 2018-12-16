@@ -10,18 +10,117 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
     <link rel="stylesheet" href="css/style.css">
-      <% var bddLanguage = language;%>
-      <% var boardUrlBase = jiraUrlBase;%>
-      <% var acronym = boardAcronym;%>
-    <script type="text/javascript">
-      var gherkinLanguage = <%- JSON.stringify(bddLanguage)  %>;
-      var boardUrl = <%- JSON.stringify(boardUrlBase)  %>;
-      var acronymId = <%- JSON.stringify(acronym)  %>;
-    </script>
+
+    <% var featureFiles = []; %>
+
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="js/html-keywords.js"></script>
     <script src="js/locales.js"></script>
+
+    <script type="text/javascript">
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip({
+          animation: true,
+          delay: { show: 500, hide: 100 }
+        });
+      });
+
+      var changeFolderIcon = function(folderIcon, isOpen) {
+        if(isOpen) {
+          $(folderIcon).removeClass('fa-folder-open');
+          $(folderIcon).addClass('fa-folder');
+        } else {
+          $(folderIcon).removeClass('fa-folder');
+          $(folderIcon).addClass('fa-folder-open');
+        }
+      }
+
+      var toggleFolderArrow = function(folderArrow, isOpen) {
+        if(isOpen) {
+          $(folderArrow).addClass('invisible');
+        } else {
+          $(folderArrow).removeClass('invisible');
+        }
+      }
+
+      $(document).ready(function() {
+        document.querySelectorAll('.root li a').forEach((element) => {
+          element.addEventListener('click', function(event) {
+            var element = event.srcElement;
+
+            if(element.classList.contains('folder-link')) {
+              var folderContent = element.nextElementSibling;
+    
+              if(folderContent.classList.contains('show')) {
+                $(folderContent).collapse('hide');
+                changeFolderIcon(element.querySelector('.folder-icon'), true);
+                toggleFolderArrow(element.querySelector('.folder-arrow'), true);
+              } else {
+                $(folderContent).collapse('show');
+                changeFolderIcon(element.querySelector('.folder-icon'), false);
+                toggleFolderArrow(element.querySelector('.folder-arrow'), false);
+              }
+            } else {
+              var featureFileName = element.querySelector('.file-name').textContent;
+              var featureContent = document.querySelector('.feature #' + featureFileName);
+
+              var features = document.querySelectorAll('.feature .feature-content');
+              features.forEach((feature) => {
+                if(!feature.classList.contains('d-none')) {
+                  $(feature).addClass('d-none');
+                }
+              });
+              var activeLinks = document.querySelectorAll('.root a');
+              activeLinks.forEach((link) => {
+                if(link.classList.contains('active-feature')) $(link).removeClass('active-feature');
+              });
+
+              $(element).addClass('active-feature');
+              $(featureContent).removeClass('d-none');
+            }
+          });
+        });
+      });
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var language = "<%= language %>";
+        document.querySelectorAll('.feature-content ul li').forEach((item) => {
+          $(item).html($(item).html().replace(/\"/g, "<strong>\"</strong>"));
+          $(item).html($(item).html().replace(/\|/g, "<strong>|</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].feature, "<strong>" + LANGUAGES.keywords[language].feature + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].background, "<strong>" + LANGUAGES.keywords[language].background + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].examples, "<strong>" + LANGUAGES.keywords[language].examples + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario_outline, "<strong>" + LANGUAGES.keywords[language].scenario_outline + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario, "<strong>" + LANGUAGES.keywords[language].scenario + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].given, "<strong>" + LANGUAGES.keywords[language].given + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].when, "<strong>" + LANGUAGES.keywords[language].when + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].but, "<strong>" + LANGUAGES.keywords[language].but + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].then, "<strong>" + LANGUAGES.keywords[language].then + "</strong>"));
+          $(item).html($(item).html().replace(LANGUAGES.keywords[language].and, "<strong>" + LANGUAGES.keywords[language].and + "</strong>"));
+        });
+  
+        // Add CSS Classes
+        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].feature + ')').each((item) => {
+          $(item).addClass('cs-feature-title');
+        });
+        
+        $('.feature-content ul li:contains(@)').each((item) => {
+          $(item).addClass('cs-feature-tag');
+        });
+        
+        $('.feature-content ul li:contains(|)').each((item) => {
+          $(item).css('white-space', 'pre');
+        });
+
+        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].given + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].when + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].then + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].but + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].and + ')').each((item) => {
+          $(item).addClass('cs-feature-steps');
+        });
+      });     
+    </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -30,60 +129,84 @@
     <link rel="manifest" href="images/site.webmanifest">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
-
   </head>
   <body>
-
     <section class="container-fluid">
-
       <!-- List group -->
       <div class="row">
-
         <div class="col-lg-3 d-lg-block sidebar cs-nav">
-
           <div class="sidebar-sticky">
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
+            <ul class="root">
+              <% 
+                let parseModelRecursively = (obj) => {
+                  if(obj.isDirectory) {
+              %>
+                    <li class="folder">
+                      <a class="folder-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
+                        <i class="folder-icon far fa-folder"></i><!--
+                     --><span class="folder-name"><%=obj.name%></span><!--
+                     --><i class="folder-arrow invisible fas fa-angle-down"></i>
+                      </a>
+                      <ul class="collapse folder-content" id='<%= obj.name %>'>
+              <%
+                    obj.content.forEach(function (item) {
+                      parseModelRecursively(item);
+                    }, obj);
+              %>
+                      </ul>
+                    </li>
+              <%
+                  } else {
+                    featureFiles.push(obj);
+              %>
+                    <li class="file">
+                      <a class="file-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
+                        <i class="file-icon devicon-cucumber-plain colored"></i><!--
+                        --><span class="file-name"><%=obj.name%></span>
+                      </a>
+                    </li>
+              <%
+                  }
+                }
 
-            <div class="list-group" id="myList" role="tablist">
-            <% Object.keys(contentFeature).forEach(function(prop) { %>
-              <a class="list-group-item list-group-item-action" data-toggle="list" href="#<%=prop%>" role="tab"><%=prop%></a>
-            <% }); %>
-            </div>
+                parseModelRecursively(rootFolder);
+              %>
+            </ul>
           </div>
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
-          <div class="tab-content">
-          <% Object.keys(contentFeature).forEach(function(prop) { %>
-            <div class="tab-pane jumbotron font-weight-light cs-pane" id=<%=prop%> role="tabpanel">
-              <ul>
-                <% for(let i = 0; i < contentFeature[prop].length; i++) { %>
-                <li><%=contentFeature[prop][i]%></li>
-                <% } %>
-              </ul>
-              </div>
-          <% }); %>
+          <div class="feature">
+          <%
+            featureFiles.forEach((featureFile) => {
+          %>
+            <div id="<%=featureFile.name%>" class="feature-content d-none jumbotron font-weight-light cs-pane">
+                <ul>
+                  <% for(let i = 0; i < featureFile.content.length; i++) { %>
+                  <li><%=featureFile.content[i]%></li>
+                  <% } %>
+                </ul>
+            </div>
+          <%
+            });
+          %>
           </div>
         </main>
-
-        <footer class="col-lg-9 ml-sm-auto cs-footer">
-          Developed with ❤ by <a target="_blank" href="https://github.com/menezes-ssz">Leonardo Menezes</a> | <a href="https://github.com/menezes-ssz/feature-express" target="_blank">Github FeatureExpress</a>
-          <br>
-          <span>Design by <a href="http://kalyneramon.com.br/" target="_blank">Kalyne Ramon</a></span>
-        </footer>
-
       </div>
-
     </section>
 
+    <footer class="cs-footer">
+      Developed with ❤ by <a target="_blank" href="https://github.com/menezes-ssz">Leonardo Menezes</a>
+      <br>
+      <span>Design by <a href="http://kalyneramon.com.br/" target="_blank">Kalyne Ramon</a></span>
+    </footer>
 
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   </body>
-
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </html>
