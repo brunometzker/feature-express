@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 const express = require('express');
 const reader = require('../lib/reader.js');
 const localeHandler = require("../lib/locale-handler");
@@ -7,7 +6,7 @@ const path = require('path');
 
 const app = express();
 const featurebookEndPoint = '/';
-const envPath = process.argv[2];
+const envPath = process.argv[2] || path.join(__dirname, '..', '/test/features-example');
 const language = localeHandler.getValidLanguage(process.argv[3] || process.env.LANG);
 const port = process.argv[4] == null ? 3000 :  process.argv[4];
 const jiraUrlBase = process.argv[5] || null;
