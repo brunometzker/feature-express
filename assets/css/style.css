@@ -16,6 +16,7 @@ ul {
 ul li {
   width: inherit;
   padding-top: 20px;
+  cursor: pointer;
 }
 
 ul li i {
@@ -29,10 +30,9 @@ ul li span {
 .folder-link, .file-link {
   display: inline-block;
   width: inherit;
-  cursor: pointer;
 }
 
-.folder-icon, .folder-arrow, .file-icon {
+.folder-icon, .file-icon {
   display: inline-block;
   width: 15%;
   text-align: center;
@@ -41,7 +41,7 @@ ul li span {
 }
 
 .folder-name, .file-name {
-  width: 70%;
+  width: 85%;
   display: inline-block;
   pointer-events: none;
   overflow: hidden;

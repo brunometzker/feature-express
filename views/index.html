@@ -27,41 +27,119 @@
         });
       });
 
-      var changeFolderIcon = function(folderIcon, isOpen) {
-        if(isOpen) {
-          $(folderIcon).removeClass('fa-folder-open');
-          $(folderIcon).addClass('fa-folder');
-        } else {
-          $(folderIcon).removeClass('fa-folder');
-          $(folderIcon).addClass('fa-folder-open');
+      // var changeFolderIcon = function(folderIcon, isOpen) {
+      //   if(isOpen) {
+      //     $(folderIcon).removeClass('fa-folder-open');
+      //     $(folderIcon).addClass('fa-folder');
+      //   } else {
+      //     $(folderIcon).removeClass('fa-folder');
+      //     $(folderIcon).addClass('fa-folder-open');
+      //   }
+      // }
+
+      // var toggleFolderArrow = function(folderArrow, isOpen) {
+      //   if(isOpen) {
+      //     $(folderArrow).addClass('invisible');
+      //   } else {
+      //     $(folderArrow).removeClass('invisible');
+      //   }
+      // }
+
+      class Folder {
+        constructor(content, name = undefined) {
+          this._content = content;
+          this._name = name;
+        }
+
+        get content() { return this._content; }
+
+        set name(name) { this._name = name; }
+
+        get name() { return this._name; }
+      }
+
+      class Breadcrumb {
+        constructor(selector = 'ol.breadcrumb') {
+          this._selector = selector;
+        }
+
+        get selector() { return this._selector; }
+
+        add(folder, onClick) {
+          let element = document.createElement('li');
+          element.classList.add('breadcrumb-item', 'active');
+          element.addEventListener('click', onClick);
+          element.textContent = folder.name;
+
+          document.querySelector(this._selector).appendChild(element);
+        }
+
+        refresh(fromFolder) { 
+          document.querySelectorAll(this._selector + ' > li').forEach((folder) => {
+            
+          }) 
         }
       }
 
-      var toggleFolderArrow = function(folderArrow, isOpen) {
-        if(isOpen) {
-          $(folderArrow).addClass('invisible');
-        } else {
-          $(folderArrow).removeClass('invisible');
+      class Sidebar {
+        constructor(breadcrumb, selector = '.sidebar-content') {
+          this._breadcrumb = breadcrumb;
+          this._selector = selector;
+        }
+
+        get breadcrumb() { return this._breadcrumb; }
+
+        addToBreadcrumb(folder) {
+          this._breadcrumb.add(folder, function(event) {
+            let breadcrumb = document.querySelector(this._breadcrumb.selector);
+            let breadcrumbItems = breadcrumb.children;
+            for(let i = 0; i < breadcrumbItems.length; i++) {
+              if(breadcrumbItems[i].textContent === folder.name) {
+                let itemIndex = i;
+                for(let j = breadcrumbItems.length - 1; j > itemIndex; j--) {
+                  breadcrumbItems[j].remove();
+                }
+              }
+            }
+            
+            this.clearContent();
+            this.displayContent(folder.content);
+          }.bind(this));
+        }
+
+        clearContent() { 
+          document.querySelectorAll(this._selector + ' > *').forEach((item) => {
+            $(item).tooltip('hide');
+            item.remove();
+          })
+        }
+
+        displayContent(content) { 
+          let sidebar = document.querySelector(this._selector);
+          content.forEach((item) => {
+            if(item.classList.contains('d-none'))
+              item.classList.remove('d-none');
+
+            sidebar.appendChild(item);
+          });
         }
       }
 
       $(document).ready(function() {
-        document.querySelectorAll('.root li a').forEach((element) => {
-          element.addEventListener('click', function(event) {
-            var element = event.srcElement;
+        let rootFolder = new Folder(document.querySelectorAll('.sidebar-content > li'), '..')
+        let breadcrumb = new Breadcrumb();
+        
+        let sidebar = new Sidebar(breadcrumb);
+        sidebar.addToBreadcrumb(rootFolder);
 
-            if(element.classList.contains('folder-link')) {
-              var folderContent = element.nextElementSibling;
-    
-              if(folderContent.classList.contains('show')) {
-                $(folderContent).collapse('hide');
-                changeFolderIcon(element.querySelector('.folder-icon'), true);
-                toggleFolderArrow(element.querySelector('.folder-arrow'), true);
-              } else {
-                $(folderContent).collapse('show');
-                changeFolderIcon(element.querySelector('.folder-icon'), false);
-                toggleFolderArrow(element.querySelector('.folder-arrow'), false);
-              }
+        document.querySelectorAll('.sidebar-content li').forEach((element) => {
+          let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.id);
+          
+          element.addEventListener('click', function(event) {
+            if(element.classList.contains('folder')) {
+              sidebar.addToBreadcrumb(folder);
+              sidebar.clearContent();
+              sidebar.displayContent(folder.content);
             } else {
               var featureFileName = element.querySelector('.file-name').textContent;
               var featureContent = document.querySelector('.feature #' + featureFileName);
@@ -82,6 +160,9 @@
             }
           });
         });
+
+        sidebar.clearContent();
+        sidebar.displayContent(rootFolder.content);
       });
     </script>
 
@@ -139,18 +220,18 @@
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
-            <ul class="root">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb"></ol>
+            </nav>
+            <ul class="sidebar-content">
               <% 
                 let parseModelRecursively = (obj) => {
                   if(obj.isDirectory) {
               %>
-                    <li class="folder">
-                      <a class="folder-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
-                        <i class="folder-icon far fa-folder"></i><!--
-                     --><span class="folder-name"><%=obj.name%></span><!--
-                     --><i class="folder-arrow invisible fas fa-angle-down"></i>
-                      </a>
-                      <ul class="collapse folder-content" id='<%= obj.name %>'>
+                    <li class="folder" id='<%= obj.name %>' data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">    
+                      <i class="folder-icon far fa-folder"></i><!--
+                    --><span class="folder-name"><%=obj.name%></span>
+                      <ul class="d-none folder-content" id='<%= obj.name %>-content'>
               <%
                     obj.content.forEach(function (item) {
                       parseModelRecursively(item);
