@@ -27,35 +27,15 @@
         });
       });
 
-      // var changeFolderIcon = function(folderIcon, isOpen) {
-      //   if(isOpen) {
-      //     $(folderIcon).removeClass('fa-folder-open');
-      //     $(folderIcon).addClass('fa-folder');
-      //   } else {
-      //     $(folderIcon).removeClass('fa-folder');
-      //     $(folderIcon).addClass('fa-folder-open');
-      //   }
-      // }
-
-      // var toggleFolderArrow = function(folderArrow, isOpen) {
-      //   if(isOpen) {
-      //     $(folderArrow).addClass('invisible');
-      //   } else {
-      //     $(folderArrow).removeClass('invisible');
-      //   }
-      // }
-
       class Folder {
-        constructor(content, name = undefined) {
+        constructor(content, name) {
           this._content = content;
           this._name = name;
         }
 
-        get content() { return this._content; }
-
-        set name(name) { this._name = name; }
-
         get name() { return this._name; }
+        
+        get content() { return this._content; }
       }
 
       class Breadcrumb {
@@ -85,9 +65,14 @@
         constructor(breadcrumb, selector = '.sidebar-content') {
           this._breadcrumb = breadcrumb;
           this._selector = selector;
+          this._activeFeature = undefined;
         }
 
         get breadcrumb() { return this._breadcrumb; }
+
+        set activeFeature(feature) { this._activeFeature = feature; }
+
+        get activeFeature() { return this._activeFeature; }
 
         addToBreadcrumb(folder) {
           this._breadcrumb.add(folder, function(event) {
@@ -109,7 +94,7 @@
 
         clearContent() { 
           document.querySelectorAll(this._selector + ' > *').forEach((item) => {
-            $(item).tooltip('hide');
+            $('[data-toggle="tooltip"]').tooltip('hide');
             item.remove();
           })
         }
@@ -125,44 +110,93 @@
         }
       }
 
+      class ContentArea {
+        constructor(selector = '.feature') {
+          this._selector = selector;
+        }
+
+        clear() {
+          document.querySelectorAll(this._selector + ' > *').forEach((item) => {
+            item.remove();
+          });
+        }
+
+        displayContent(content) {
+          let area = document.querySelector(this._selector);
+          content.forEach((item) => {
+            if(item.classList.contains('d-none'))
+              item.classList.remove('d-none');
+
+            area.appendChild(item);
+          });
+        }
+      }
+
+      class Feature {
+        constructor(link, content, name, isActive) {
+          this._link = link;
+          this._content = content;
+          this._name = name;
+          this._isActive = isActive;
+        }
+
+        get link() { return this._link; }
+
+        get content() { return this._content; }
+
+        get name() { return this._name; }
+
+        set isActive(isActive) {
+          if(isActive)
+            this._link.item(0).classList.add('active-feature');
+          else
+            this._link.item(0).classList.remove('active-feature');
+          
+          this._isActive = isActive;
+        }
+
+        get isActive() { return this._isActive; }
+      }
+
       $(document).ready(function() {
         let rootFolder = new Folder(document.querySelectorAll('.sidebar-content > li'), '..')
-        let breadcrumb = new Breadcrumb();
         
-        let sidebar = new Sidebar(breadcrumb);
+        let sidebar = new Sidebar(new Breadcrumb());
         sidebar.addToBreadcrumb(rootFolder);
 
+        let contentArea = new ContentArea();
+        
         document.querySelectorAll('.sidebar-content li').forEach((element) => {
-          let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.id);
-          
-          element.addEventListener('click', function(event) {
-            if(element.classList.contains('folder')) {
+          if(element.classList.contains('folder')) {
+            let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.id);
+            
+            element.addEventListener('click', function(event) {
               sidebar.addToBreadcrumb(folder);
               sidebar.clearContent();
               sidebar.displayContent(folder.content);
-            } else {
-              var featureFileName = element.querySelector('.file-name').textContent;
-              var featureContent = document.querySelector('.feature #' + featureFileName);
+            });
+          } else {
+            let feature = new Feature(document.querySelectorAll('.sidebar-content #' + element.id), 
+                                      document.querySelectorAll('.feature #' + element.id), 
+                                      element.id, 
+                                      false);
 
-              var features = document.querySelectorAll('.feature .feature-content');
-              features.forEach((feature) => {
-                if(!feature.classList.contains('d-none')) {
-                  $(feature).addClass('d-none');
-                }
-              });
-              var activeLinks = document.querySelectorAll('.root a');
-              activeLinks.forEach((link) => {
-                if(link.classList.contains('active-feature')) $(link).removeClass('active-feature');
-              });
+            element.addEventListener('click', function(event) {
+              if(sidebar.activeFeature !== undefined)
+                sidebar.activeFeature.isActive = false;
 
-              $(element).addClass('active-feature');
-              $(featureContent).removeClass('d-none');
-            }
-          });
+              feature.isActive = true;
+              sidebar.activeFeature = feature;
+
+              contentArea.clear();
+              contentArea.displayContent(feature.content);
+            });
+          }
         });
-
+        
         sidebar.clearContent();
         sidebar.displayContent(rootFolder.content);
+        contentArea.clear();
       });
     </script>
 
@@ -243,11 +277,9 @@
                   } else {
                     featureFiles.push(obj);
               %>
-                    <li class="file">
-                      <a class="file-link" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
-                        <i class="file-icon devicon-cucumber-plain colored"></i><!--
-                        --><span class="file-name"><%=obj.name%></span>
-                      </a>
+                    <li id="<%= obj.name %>" class="file" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
+                      <i class="file-icon devicon-cucumber-plain colored"></i><!--
+                      --><span class="file-name"><%=obj.name%></span>
                     </li>
               <%
                   }
