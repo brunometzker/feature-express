@@ -51,46 +51,22 @@
           element.addEventListener('click', onClick);
           element.textContent = folder.name;
 
-          document.querySelector(this._selector).appendChild(element);
-        }
+          let previousLevelElement = document.querySelector(this._selector).lastElementChild;
+          if(previousLevelElement !== undefined && previousLevelElement !== null) previousLevelElement.classList.remove('active');
 
-        refresh(fromFolder) { 
-          document.querySelectorAll(this._selector + ' > li').forEach((folder) => {
-            
-          }) 
+          document.querySelector(this._selector).appendChild(element);
         }
       }
 
       class Sidebar {
-        constructor(breadcrumb, selector = '.sidebar-content') {
-          this._breadcrumb = breadcrumb;
+        constructor(selector = '.sidebar-content') {
           this._selector = selector;
           this._activeFeature = undefined;
         }
 
-        get breadcrumb() { return this._breadcrumb; }
-
         set activeFeature(feature) { this._activeFeature = feature; }
 
         get activeFeature() { return this._activeFeature; }
-
-        addToBreadcrumb(folder) {
-          this._breadcrumb.add(folder, function(event) {
-            let breadcrumb = document.querySelector(this._breadcrumb.selector);
-            let breadcrumbItems = breadcrumb.children;
-            for(let i = 0; i < breadcrumbItems.length; i++) {
-              if(breadcrumbItems[i].textContent === folder.name) {
-                let itemIndex = i;
-                for(let j = breadcrumbItems.length - 1; j > itemIndex; j--) {
-                  breadcrumbItems[j].remove();
-                }
-              }
-            }
-            
-            this.clearContent();
-            this.displayContent(folder.content);
-          }.bind(this));
-        }
 
         clearContent() { 
           document.querySelectorAll(this._selector + ' > *').forEach((item) => {
@@ -107,6 +83,39 @@
 
             sidebar.appendChild(item);
           });
+        }
+      }
+
+      class App {
+        constructor(sidebar, breadcrumb, contentArea) {
+          this._sidebar = sidebar;
+          this._breadcrumb = breadcrumb;
+          this._contentArea = contentArea;
+        }
+
+        get sidebar() { return this._sidebar; }
+
+        get breadcrumb() { return this._breadcrumb; }
+
+        get contentArea() { return this._contentArea; }
+
+        addToBreadcrumb(folder) {
+          this._breadcrumb.add(folder, function(event) {
+            let breadcrumb = document.querySelector(this._breadcrumb.selector);
+            let breadcrumbItems = breadcrumb.children;
+            for(let i = 0; i < breadcrumbItems.length; i++) {
+              if(breadcrumbItems[i].textContent === folder.name) {
+                let itemIndex = i;
+                for(let j = breadcrumbItems.length - 1; j > itemIndex; j--) {
+                  breadcrumbItems[j].remove();
+                }
+                breadcrumbItems[i].classList.add('active');
+              }
+            }
+            
+            this._sidebar.clearContent();
+            this._sidebar.displayContent(folder.content);
+          }.bind(this));
         }
       }
 
@@ -161,19 +170,17 @@
       $(document).ready(function() {
         let rootFolder = new Folder(document.querySelectorAll('.sidebar-content > li'), '..')
         
-        let sidebar = new Sidebar(new Breadcrumb());
-        sidebar.addToBreadcrumb(rootFolder);
-
-        let contentArea = new ContentArea();
+        let app = new App(new Sidebar(), new Breadcrumb(), new ContentArea());
+        app.addToBreadcrumb(rootFolder);
         
         document.querySelectorAll('.sidebar-content li').forEach((element) => {
           if(element.classList.contains('folder')) {
             let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.id);
             
             element.addEventListener('click', function(event) {
-              sidebar.addToBreadcrumb(folder);
-              sidebar.clearContent();
-              sidebar.displayContent(folder.content);
+              app.addToBreadcrumb(folder);
+              app.sidebar.clearContent();
+              app.sidebar.displayContent(folder.content);
             });
           } else {
             let feature = new Feature(document.querySelectorAll('.sidebar-content #' + element.id), 
@@ -182,21 +189,21 @@
                                       false);
 
             element.addEventListener('click', function(event) {
-              if(sidebar.activeFeature !== undefined)
-                sidebar.activeFeature.isActive = false;
+              if(app.sidebar.activeFeature !== undefined)
+                app.sidebar.activeFeature.isActive = false;
 
               feature.isActive = true;
-              sidebar.activeFeature = feature;
+              app.sidebar.activeFeature = feature;
 
-              contentArea.clear();
-              contentArea.displayContent(feature.content);
+              app.contentArea.clear();
+              app.contentArea.displayContent(feature.content);
             });
           }
         });
         
-        sidebar.clearContent();
-        sidebar.displayContent(rootFolder.content);
-        contentArea.clear();
+        app.sidebar.clearContent();
+        app.sidebar.displayContent(rootFolder.content);
+        app.contentArea.clear();
       });
     </script>
 
@@ -254,9 +261,6 @@
             <header class="cs-header">
               <figure class="cs-header__brand"><img src="images/logo.svg" alt="" class="img-responsive"></figure>
             </header>
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb"></ol>
-            </nav>
             <ul class="sidebar-content">
               <% 
                 let parseModelRecursively = (obj) => {
@@ -292,6 +296,9 @@
         </div>
 
         <main class="col-lg-9 ml-sm-auto cs-content">
+          <nav class="folder-breadcrumb" aria-label="breadcrumb">
+            <ol class="breadcrumb"></ol>
+          </nav>
           <div class="feature">
           <%
             featureFiles.forEach((featureFile) => {

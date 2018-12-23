@@ -6,42 +6,37 @@ body {
   margin-left: 40px;
 }
 
-ul {
+.sidebar-content, ul {
   list-style: none;
   padding: 0;
   margin: 0;
   width: 100%;
 }
 
-ul li {
+.sidebar-content li {
   width: inherit;
   padding: 20px 0;
   cursor: pointer;
 }
 
-ul li i {
+.sidebar-content li i {
   font-size: 1.75rem;
 }
 
-ul li span {
+.sidebar-content li span {
   font-size: 1.25rem;
-}
-
-.folder-link, .file-link {
-  display: inline-block;
-  width: inherit;
 }
 
 .folder-icon, .file-icon {
   display: inline-block;
-  width: 15%;
+  width: 20%;
   text-align: center;
   pointer-events: none;
   vertical-align: middle;
 }
 
 .folder-name, .file-name {
-  width: 85%;
+  width: 80%;
   display: inline-block;
   pointer-events: none;
   overflow: hidden;
@@ -52,7 +47,6 @@ ul li span {
 
 .active-feature {
   background-color: #05AD91;
-  /* padding: 20px 0; */
 }
 
 .active-feature span {
@@ -60,13 +54,33 @@ ul li span {
 }
 
 /* Customizations */
+.breadcrumb {
+  background: #f8f9fa;
+  margin: 16px 0;
+  border-bottom: 1px solid #5A5A5A;
+}
+
+.breadcrumb-item {
+  font-size: 1.25rem;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+}
+
+.breadcrumb-item {
+  color: #05AD91;
+}
+
+.breadcrumb-item.active {
+  cursor: not-allowed;
+  color: #999;
+}
+
 .cs-header {
   background: #fff;
   width: 100%;
   display: block;
   padding: 30px 0;
   text-align: center;
-
 }
 
 .cs-header__brand {
