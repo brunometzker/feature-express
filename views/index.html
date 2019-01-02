@@ -14,10 +14,89 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/konpa/devicon/df6431e323547add1b4cf45992913f15286456d3/devicon.min.css">
     <link rel="stylesheet" href="css/style.css">
 
-    <% var featureFiles = []; %>
-
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="js/locales.js"></script>
+
+    <script type="text/javascript">
+      let commentRegex = /^#[\w\s]+$/im;
+      let keywordRegex = /^\s*((?:Feature|Background|Scenario Outline|Scenario|Examples|Given|When|Then|And|But)\:?)(.+)$/im;
+      let identationRegex = /^(\s+)/im;
+      let tagRegex = /\s*(@[^@]+)/igm;
+      let dataTableRowRegex = /^(\s*\|(?:[\|\s\w]+))$/im;
+      
+      let applyStyle = (item, pattern, styler) => {
+        if(pattern.test(item.textContent)) {
+          pattern.lastIndex = 0;
+          styler(item, pattern);
+        }
+      };
+
+      let formatFeature = (feature) => {
+        let lines = feature.querySelectorAll('li');
+
+        lines.forEach(line => {
+          if(!line.classList.contains('formatted')) {
+            let element = document.createElement('li');
+            element.textContent = line.textContent;
+            element.classList.add('formatted');
+  
+            line.remove();
+
+            applyStyle(element, identationRegex, (item, pattern) => {
+              let matches = pattern.exec(item.textContent);
+              let numberOfSpaces = matches[1].length;
+    
+              item.style.paddingLeft = `calc(${numberOfSpaces} * 1rem)`;
+            });
+  
+            applyStyle(element, commentRegex, (item, pattern) => {
+              item.classList.add('comment');
+            });
+  
+            applyStyle(element, keywordRegex, (item, pattern) => {
+              let matches = item.textContent.match(pattern);
+              
+              let keyword = document.createElement('span');
+              keyword.textContent = matches[1];
+              keyword.classList.add('gherkin-keyword');
+    
+              let keywordContent = document.createElement('span');
+              keywordContent.textContent = matches[2];
+              keywordContent.classList.add('keyword-content');
+    
+              item.textContent = "";
+              item.append(keyword, keywordContent);
+            });
+
+            applyStyle(element, tagRegex, (item, pattern) => {
+              let textToMatch = item.textContent;
+              item.textContent = "";
+
+              while(match = pattern.exec(textToMatch)) {
+                let tag = document.createElement('span');
+                tag.textContent = match[1];
+                tag.classList.add('gherkin-tag');
+
+                item.appendChild(tag);
+              }
+            });
+
+            applyStyle(element, dataTableRowRegex, (item, pattern) => {
+              let matches = item.textContent.match(pattern);
+              
+              let dataTableRow = document.createElement('span');
+              dataTableRow.textContent = matches[1];
+              dataTableRow.classList.add('data-table-row');
+
+              item.textContent = "";
+              item.appendChild(dataTableRow);
+            });
+        
+            feature.appendChild(element);
+          }
+        });
+      }
+    </script>
 
     <script type="text/javascript">
       $(function () {
@@ -132,12 +211,13 @@
 
         displayContent(content) {
           let area = document.querySelector(this._selector);
-          content.forEach((item) => {
-            if(item.classList.contains('d-none'))
-              item.classList.remove('d-none');
+          
+          formatFeature(content);
 
-            area.appendChild(item);
-          });
+          if(content.classList.contains('d-none'))
+            content.classList.remove('d-none');
+
+          area.appendChild(content);
         }
       }
 
@@ -184,17 +264,17 @@
             });
           } else {
             let feature = new Feature(document.querySelectorAll('.sidebar-content #' + element.id), 
-                                      document.querySelectorAll('.feature #' + element.id), 
+                                      document.querySelector('.feature #' + element.id), 
                                       element.id, 
                                       false);
-
+  
             element.addEventListener('click', function(event) {
               if(app.sidebar.activeFeature !== undefined)
                 app.sidebar.activeFeature.isActive = false;
-
+  
               feature.isActive = true;
               app.sidebar.activeFeature = feature;
-
+  
               app.contentArea.clear();
               app.contentArea.displayContent(feature.content);
             });
@@ -206,44 +286,6 @@
         app.contentArea.clear();
       });
     </script>
-
-    <script type="text/javascript">
-      $(document).ready(function() {
-        var language = "<%= language %>";
-        document.querySelectorAll('.feature-content ul li').forEach((item) => {
-          $(item).html($(item).html().replace(/\"/g, "<strong>\"</strong>"));
-          $(item).html($(item).html().replace(/\|/g, "<strong>|</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].feature, "<strong>" + LANGUAGES.keywords[language].feature + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].background, "<strong>" + LANGUAGES.keywords[language].background + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].examples, "<strong>" + LANGUAGES.keywords[language].examples + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario_outline, "<strong>" + LANGUAGES.keywords[language].scenario_outline + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].scenario, "<strong>" + LANGUAGES.keywords[language].scenario + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].given, "<strong>" + LANGUAGES.keywords[language].given + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].when, "<strong>" + LANGUAGES.keywords[language].when + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].but, "<strong>" + LANGUAGES.keywords[language].but + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].then, "<strong>" + LANGUAGES.keywords[language].then + "</strong>"));
-          $(item).html($(item).html().replace(LANGUAGES.keywords[language].and, "<strong>" + LANGUAGES.keywords[language].and + "</strong>"));
-        });
-  
-        // Add CSS Classes
-        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].feature + ')').each((item) => {
-          $(item).addClass('cs-feature-title');
-        });
-        
-        $('.feature-content ul li:contains(@)').each((item) => {
-          $(item).addClass('cs-feature-tag');
-        });
-        
-        $('.feature-content ul li:contains(|)').each((item) => {
-          $(item).css('white-space', 'pre');
-        });
-
-        $('.feature-content ul li:contains(' + LANGUAGES.keywords[language].given + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].when + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].then + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].but + '), .tab-pane ul li:contains(' + LANGUAGES.keywords[language].and + ')').each((item) => {
-          $(item).addClass('cs-feature-steps');
-        });
-      });     
-    </script>
-
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
@@ -300,19 +342,21 @@
             <ol class="breadcrumb"></ol>
           </nav>
           <div class="feature">
-          <%
-            featureFiles.forEach((featureFile) => {
-          %>
-            <div id="<%=featureFile.name%>" class="feature-content d-none jumbotron font-weight-light cs-pane">
-                <ul>
-                  <% for(let i = 0; i < featureFile.content.length; i++) { %>
-                  <li><%=featureFile.content[i]%></li>
-                  <% } %>
+            <%
+              featureFiles.forEach(featureFile => {
+            %>
+                <ul id="<%= featureFile.name %>" class="feature-content d-none jumbotron font-weight-light cs-pane">
+            <% 
+                featureFile.content.forEach(line => {
+            %>
+                  <li><%= line %></li>
+            <%
+                });
+            %>
                 </ul>
-            </div>
-          <%
-            });
-          %>
+            <%
+              });
+            %>
           </div>
         </main>
       </div>

@@ -53,6 +53,32 @@ body {
   color: #ffffff;
 }
 
+/* Feature formatting */
+.feature ul li {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.comment {
+  color: #7C9577;
+}
+
+.gherkin-tag {
+  color: #007bff;
+}
+
+.gherkin-keyword {
+  color: #05AD91;
+}
+
+.keyword-content {
+  color: #999;
+}
+
+.data-table-row {
+  color: #6f42c1;
+}
+
 /* Customizations */
 .breadcrumb {
   background: #f8f9fa;

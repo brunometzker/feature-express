@@ -19,7 +19,8 @@ app.engine('html', require('ejs').renderFile);
 app.get(featurebookEndPoint , (req, res) => {
   try {
     let rootFolder = reader.getFiles(envPath);
-    res.render('index.html', { rootFolder, language, jiraUrlBase, boardAcronym });
+    let featureFiles = [];
+    res.render('index.html', { rootFolder, language, jiraUrlBase, boardAcronym, featureFiles });
   } catch(error) {
     console.error(error);
     res.render('error-page.html', {err: 'Unable to find feature files directory!'});
