@@ -18,11 +18,11 @@
     <script src="js/locales.js"></script>
 
     <script type="text/javascript">
-      let commentRegex = /^#[\w\s]+$/im;
+      let commentRegex = /^#.+$/im;
       let keywordRegex = /^\s*((?:Feature|Background|Scenario Outline|Scenario|Examples|Given|When|Then|And|But)\:?)(.+)$/im;
       let identationRegex = /^(\s+)/im;
       let tagRegex = /\s*(@[^@]+)/igm;
-      let dataTableRowRegex = /^(\s*\|(?:[\|\s\w]+))$/im;
+      let dataTableRowRegex = /^(\s*\|(?:.+))$/im;
       
       let applyStyle = (item, pattern, styler) => {
         if(pattern.test(item.textContent)) {
