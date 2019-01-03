@@ -307,15 +307,17 @@
               <% 
                 let parseModelRecursively = (obj) => {
                   if(obj.isDirectory) {
+                    if(obj.content.length > 0) {
               %>
                     <li class="folder" id='<%= obj.name %>' data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">    
                       <i class="folder-icon far fa-folder"></i><!--
                     --><span class="folder-name"><%=obj.name%></span>
                       <ul class="d-none folder-content" id='<%= obj.name %>-content'>
               <%
-                    obj.content.forEach(function (item) {
-                      parseModelRecursively(item);
-                    }, obj);
+                      obj.content.forEach(function (item) {
+                        parseModelRecursively(item);
+                      }, obj);
+                    }
               %>
                       </ul>
                     </li>
