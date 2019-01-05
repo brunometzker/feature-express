@@ -21,7 +21,7 @@
       let commentRegex = /^#.+$/im;
       let keywordRegex = /^\s*((?:Feature|Background|Scenario Outline|Scenario|Examples|Given|When|Then|And|But)\:?)(.+)$/im;
       let identationRegex = /^(\s+)/im;
-      let tagRegex = /\s*(@[^@]+)/igm;
+      let tagRegex = /(\s*@[^@\[\]]+)(?:\[([^@]+)\])?/igm;
       let dataTableRowRegex = /^(\s*\|(?:.+))$/im;
       
       let applyStyle = (item, pattern, styler) => {
@@ -74,8 +74,18 @@
 
               while(match = pattern.exec(textToMatch)) {
                 let tag = document.createElement('span');
-                tag.textContent = match[1];
                 tag.classList.add('gherkin-tag');
+
+                if(match[2] !== undefined) {
+                  let anchor = document.createElement('a');
+                  anchor.textContent = match[1];
+                  anchor.setAttribute('href', match[2]);
+                  anchor.setAttribute('target', '_blank');
+
+                  tag.appendChild(anchor);
+                } else {
+                  tag.textContent = match[1];
+                }
 
                 item.appendChild(tag);
               }
@@ -309,18 +319,20 @@
                   if(obj.isDirectory) {
                     if(obj.content.length > 0) {
               %>
-                    <li class="folder" id='<%= obj.name %>' data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">    
-                      <i class="folder-icon far fa-folder"></i><!--
-                    --><span class="folder-name"><%=obj.name%></span>
-                      <ul class="d-none folder-content" id='<%= obj.name %>-content'>
+                      <li class="folder" id='<%= obj.name %>' data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">    
+                        <i class="folder-icon far fa-folder"></i><!--
+                      --><span class="folder-name"><%=obj.name%></span>
+                        <ul class="d-none folder-content" id='<%= obj.name %>-content'>
               <%
-                      obj.content.forEach(function (item) {
-                        parseModelRecursively(item);
-                      }, obj);
+                        obj.content.forEach(function (item) {
+                          parseModelRecursively(item);
+                        }, obj);
+              %>
+                        </ul>
+                      </li>
+              <%
                     }
               %>
-                      </ul>
-                    </li>
               <%
                   } else {
                     featureFiles.push(obj);

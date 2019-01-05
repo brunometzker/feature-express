@@ -6,7 +6,7 @@ Feature: This is a feature
 
   Background: This is a background
 
-  @tag @whatever
+  @whatever[http://www.google.com.br] @tag[https://www.adidas.com.br]
   Scenario: This is a Scenario
     Given This a given step
     When  This is a when step
