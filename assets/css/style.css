@@ -67,6 +67,10 @@ body {
   color: #007bff;
 }
 
+.gherkin-tag > a:hover {
+  text-decoration: none;
+}
+
 .gherkin-keyword {
   color: #05AD91;
 }
