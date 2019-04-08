@@ -265,7 +265,7 @@
         
         document.querySelectorAll('.sidebar-content li').forEach((element) => {
           if(element.classList.contains('folder')) {
-            let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.id);
+            let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.getAttribute('data-original-title'));
             
             element.addEventListener('click', function(event) {
               app.addToBreadcrumb(folder);
@@ -275,7 +275,7 @@
           } else {
             let feature = new Feature(document.querySelectorAll('.sidebar-content #' + element.id), 
                                       document.querySelector('.feature #' + element.id), 
-                                      element.id, 
+                                      element.getAttribute('data-original-title'),
                                       false);
   
             element.addEventListener('click', function(event) {
@@ -319,10 +319,10 @@
                   if(obj.isDirectory) {
                     if(obj.content.length > 0) {
               %>
-                      <li class="folder" id='<%= obj.name %>' data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">    
+                      <li class="folder" id='<%= obj.name %>-folder' data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
                         <i class="folder-icon far fa-folder"></i><!--
                       --><span class="folder-name"><%=obj.name%></span>
-                        <ul class="d-none folder-content" id='<%= obj.name %>-content'>
+                        <ul class="d-none folder-content" id='<%= obj.name %>-folder-content'>
               <%
                         obj.content.forEach(function (item) {
                           parseModelRecursively(item);
@@ -337,7 +337,7 @@
                   } else {
                     featureFiles.push(obj);
               %>
-                    <li id="<%= obj.name %>" class="file" data-toggle="tooltip" data-placement="top" title="<%= obj.name %>">
+                    <li id="<%= obj.name %>-feature" class="file" data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
                       <i class="file-icon devicon-cucumber-plain colored"></i><!--
                       --><span class="file-name"><%=obj.name%></span>
                     </li>
@@ -359,7 +359,7 @@
             <%
               featureFiles.forEach(featureFile => {
             %>
-                <ul id="<%= featureFile.name %>" class="feature-content d-none jumbotron font-weight-light cs-pane">
+                <ul id="<%= featureFile.name %>-feature" class="feature-content d-none jumbotron font-weight-light cs-pane">
             <% 
                 featureFile.content.forEach(line => {
             %>
