@@ -140,10 +140,10 @@
           element.addEventListener('click', onClick);
           element.textContent = folder.name;
 
-          let previousLevelElement = document.querySelector(this._selector).lastElementChild;
+          let previousLevelElement = document.querySelector(`${this._selector}`).lastElementChild;
           if(previousLevelElement !== undefined && previousLevelElement !== null) previousLevelElement.classList.remove('active');
 
-          document.querySelector(this._selector).appendChild(element);
+          document.querySelector(`${this._selector}`).appendChild(element);
         }
       }
 
@@ -158,14 +158,14 @@
         get activeFeature() { return this._activeFeature; }
 
         clearContent() { 
-          document.querySelectorAll(this._selector + ' > *').forEach((item) => {
+          document.querySelectorAll(`${this._selector} > *`).forEach((item) => {
             $('[data-toggle="tooltip"]').tooltip('hide');
             item.remove();
           })
         }
 
         displayContent(content) { 
-          let sidebar = document.querySelector(this._selector);
+          let sidebar = document.querySelector(`${this._selector}`);
           content.forEach((item) => {
             if(item.classList.contains('d-none'))
               item.classList.remove('d-none');
@@ -190,7 +190,7 @@
 
         addToBreadcrumb(folder) {
           this._breadcrumb.add(folder, function(event) {
-            let breadcrumb = document.querySelector(this._breadcrumb.selector);
+            let breadcrumb = document.querySelector(`${this._breadcrumb.selector}`);
             let breadcrumbItems = breadcrumb.children;
             for(let i = 0; i < breadcrumbItems.length; i++) {
               if(breadcrumbItems[i].textContent === folder.name) {
@@ -214,13 +214,13 @@
         }
 
         clear() {
-          document.querySelectorAll(this._selector + ' > *').forEach((item) => {
+          document.querySelectorAll(`${this._selector} > *`).forEach((item) => {
             item.remove();
           });
         }
 
         displayContent(content) {
-          let area = document.querySelector(this._selector);
+          let area = document.querySelector(`${this._selector}`);
           
           formatFeature(content);
 
@@ -265,7 +265,7 @@
         
         document.querySelectorAll('.sidebar-content li').forEach((element) => {
           if(element.classList.contains('folder')) {
-            let folder = new Folder(element.querySelectorAll('#' + element.id + '-content'), element.getAttribute('data-original-title'));
+            let folder = new Folder(element.querySelectorAll(`#${element.id}-content`), element.getAttribute('data-original-title'));
             
             element.addEventListener('click', function(event) {
               app.addToBreadcrumb(folder);
@@ -273,8 +273,8 @@
               app.sidebar.displayContent(folder.content);
             });
           } else {
-            let feature = new Feature(document.querySelectorAll('.sidebar-content #' + element.id), 
-                                      document.querySelector('.feature #' + element.id), 
+            let feature = new Feature(document.querySelectorAll(`.sidebar-content #${element.id}`), 
+                                      document.querySelector(`.feature #${element.id}`), 
                                       element.getAttribute('data-original-title'),
                                       false);
   
@@ -319,10 +319,10 @@
                   if(obj.isDirectory) {
                     if(obj.content.length > 0) {
               %>
-                      <li class="folder" id='<%= obj.name %>-folder' data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
+                      <li class="folder" id='<%= obj.id %>-folder' data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
                         <i class="folder-icon far fa-folder"></i><!--
                       --><span class="folder-name"><%=obj.name%></span>
-                        <ul class="d-none folder-content" id='<%= obj.name %>-folder-content'>
+                        <ul class="d-none folder-content" id='<%= obj.id %>-folder-content'>
               <%
                         obj.content.forEach(function (item) {
                           parseModelRecursively(item);
@@ -337,7 +337,7 @@
                   } else {
                     featureFiles.push(obj);
               %>
-                    <li id="<%= obj.name %>-feature" class="file" data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
+                    <li id="<%= obj.id %>-feature" class="file" data-toggle="tooltip" data-placement="top" title='<%= obj.name %>'>
                       <i class="file-icon devicon-cucumber-plain colored"></i><!--
                       --><span class="file-name"><%=obj.name%></span>
                     </li>
@@ -359,7 +359,7 @@
             <%
               featureFiles.forEach(featureFile => {
             %>
-                <ul id="<%= featureFile.name %>-feature" class="feature-content d-none jumbotron font-weight-light cs-pane">
+                <ul id="<%= featureFile.id %>-feature" class="feature-content d-none jumbotron font-weight-light cs-pane">
             <% 
                 featureFile.content.forEach(line => {
             %>
